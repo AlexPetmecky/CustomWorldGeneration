@@ -1,0 +1,5 @@
+name: CustomWorldGeneration
+version: '${project.version}'
+main: alex_petmecky.customworldgeneration.CustomWorldGeneration
+api-version: '1.21'
+load: STARTUP
