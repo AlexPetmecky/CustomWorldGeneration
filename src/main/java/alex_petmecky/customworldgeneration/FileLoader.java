@@ -54,17 +54,7 @@ public class FileLoader {
     private HashMap<String,JsonArray> loadedMaterials = new HashMap<>();
 
     public FileLoader(CustomWorldGeneration plugin){
-        //this.plugin = plugin;
 
-        //String loc = new String("plugins/alex_petmecky.customworldgen/elevation_files/test.json");
-        String loc = new String("./plugins/alex_petmecky.customworldgen/test.json");
-
-        //;
-        //File file = new File(loc);
-
-        //File file = new File(plugin.getDataFolder().getAbsolutePath()+"/test.json");
-        //File file = new File(String.valueOf(this.getClass().getResourceAsStream("test.json")));
-        //File file = new File(String.valueOf(plugin.getResource("test.json")));
         File file = new File("./static/test.json");
         try{
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
@@ -99,70 +89,37 @@ public class FileLoader {
 
         }
 
-        //this.needToLoad = new boolean[fileStructure.size()];
-        //this.isLoaded = new boolean[fileStructure.size()];
 
-        //Arrays.fill(needToLoad,false);
-        //Arrays.fill(isLoaded,false);
-        //this.needToLoad.ensureCapacity(fileStructure.size());
-        //this.isLoaded.ensureCapacity(fileStructure.size());
         this.needToLoad = new ArrayList<Boolean>(Collections.nCopies(fileStructure.size(), Boolean.FALSE));
         this.isLoaded = new ArrayList<Boolean>(Collections.nCopies(fileStructure.size(), Boolean.FALSE));
-        System.out.println("needToLoadSIZE_INIT: "+this.needToLoad.size());
-        //Collections.fill(this.needToLoad,Boolean.FALSE);
-        //Collections.fill(this.isLoaded,Boolean.FALSE);
+//        System.out.println("needToLoadSIZE_INIT: "+this.needToLoad.size());
+
     }
 
     public JsonArray loadChunks(int chunkX, int chunkZ){
-        System.out.println("needToLoadSIZE: "+this.needToLoad.size());
+        //System.out.println("needToLoadSIZE: "+this.needToLoad.size());
         int quadrantX = chunkX / this.chunksPerFile;
         int quadrantZ = chunkZ / this.chunksPerFile;
-        System.out.println("QX: "+quadrantX);
-        System.out.println("QZ: "+quadrantZ);
-
-        //needs to be tested
-        //int index = (quadrantX * fileStructure.size()) + ((fileStructure.size()-1)-quadrantZ);
-        //int index = (quadrantX * this.filesOnXAxis) + ((fileStructure.size()-1)-quadrantZ);
+        //System.out.println("QX: "+quadrantX);
+        //System.out.println("QZ: "+quadrantZ);
 
         int index = ((fileStructure.size()-1)-quadrantZ) - (quadrantX * this.filesOnXAxis);
         //savedMapping
-        System.out.println("INDEX: "+index);
-        System.out.println("isLoadedSize: "+this.isLoaded.size());
+        //System.out.println("INDEX: "+index);
+        //System.out.println("isLoadedSize: "+this.isLoaded.size());
         if(index > this.isLoaded.size()-1 || index < 0) {
-            System.out.println("INDEX LARGER OR SMALLER THAN ISLOADEDSIZE");
+            //System.out.println("INDEX LARGER OR SMALLER THAN ISLOADEDSIZE");
             return null;
         }
         String file_index = quadrantX+"_"+quadrantZ;
-        System.out.println("FILE_INDEX: "+file_index);
+       // System.out.println("FILE_INDEX: "+file_index);
 
-        //int tempX_pos = quadrantX + 1;
-        //int tempX_neg = quadrantX - 1;
-        //int tempZ_pos = quadrantZ + 1;
-        //int tempZ_neg = quadrantZ - 1;
 
         int[] tempVals = new int[4];
         tempVals[0] = quadrantX + 1;
         tempVals[1] = quadrantX - 1;
         tempVals[2] = quadrantZ + 1;
         tempVals[3] = quadrantZ - 1;
-        /*
-        for(int i = 0; i < 2; i++){
-            for(int j = 0; j < 2; j++){
-
-                int deleteIndex = (tempVals[i] * this.filesOnXAxis) + ((fileStructure.size()-1)-tempVals[j+2]);
-                if(deleteIndex<0 || deleteIndex >= this.isLoaded.size()-1){
-                    //return null;
-                    break;
-                }
-                if(this.isLoaded.get(deleteIndex)==true){
-                    this.isLoaded.set(deleteIndex,false);
-                    String deleteQuadFile = i+"_"+j;
-                    this.unloadFile(deleteQuadFile);
-                }
-            }
-            //int newIndex = (quadrantX * this.filesOnXAxis) + ((fileStructure.size()-1)-quadrantZ);
-        }
-        */
 
 
         if(this.isLoaded.get(index) == true){
@@ -181,18 +138,7 @@ public class FileLoader {
             return currentImg;
         }
 
-        /*
-        * file_position = savedMappings.get(String.valueOf(i));
-                if(this.isLoaded.get(i)){
-                    //unload the file
-                    loadedChunks.remove(file_position);
 
-                }else{
-                    //load the file
-                    String fileName = String.valueOf(fileStructure.get(file_position));
-                    //loadedChunks.put(file_position,)
-                    this.loadFile(fileName,file_position);
-        * */
 
     }
     /**
@@ -209,7 +155,7 @@ public class FileLoader {
     }
 
     public void LoadMultipleChunks(int chunkX, int chunkZ){
-        System.out.println("needToLoadSIZE: "+this.needToLoad.size());
+        //System.out.println("needToLoadSIZE: "+this.needToLoad.size());
         int quadrantX = chunkX / this.chunksPerFile;
         int quadrantZ = chunkZ / this.chunksPerFile;
 
@@ -250,7 +196,7 @@ public class FileLoader {
 
 
 
-        System.out.println("INDEX_:"+index);
+        //System.out.println("INDEX_:"+index);
         int scaledX = chunkX - (this.chunksPerFile*quadrantX);
         int scaledZ = chunkX - (this.chunksPerFile*quadrantZ);
 
@@ -259,8 +205,7 @@ public class FileLoader {
         boolean loadedTop = false;
         boolean loadedBottom = false;
 
-        int loadX = 0;
-        int loadZ = 0;
+
         // if 2 are loaded, load the corner file connecting them
 
         int newX = quadrantX;
@@ -269,22 +214,15 @@ public class FileLoader {
         //int index = (quadrantX * fileStructure.size()) + ((fileStructure.size()-1)-quadrantZ);
         if (this.chunksPerFile - scaledX < 20){
             //load right file
-            System.out.println("Load RIGHT FILE");
+            //System.out.println("Load RIGHT FILE");
             newX = quadrantX + 1;
-            loadX = 1;
 
-            //index = (newX * fileStructure.size()) + ((fileStructure.size()-1)-quadrantZ);
+
             index = (newX * this.filesOnXAxis) + ((fileStructure.size()-1)-quadrantZ);
-            System.out.println("INDEX_:"+index);
-            /*
-            if(index <= needToLoad.length-1){
-                loadedRight = true;
-                this.needToLoad[index] = true;
 
-            }
-            */
+
             if(index <= needToLoad.size()-1){
-                System.out.println("Loading Right at Index: "+index);
+
                 loadedRight = true;
                 //this.needToLoad[index] = true;
                 this.needToLoad.set(index,Boolean.TRUE);
@@ -298,18 +236,10 @@ public class FileLoader {
         }else if (scaledX < 20){
             //load left file
             System.out.println("Load left file");
-            loadX = -1;
+
 
             newX = quadrantX - 1;
-            /*
-            if(newX >= 0){
-                loadedLeft = true;
-                //index = (newX * fileStructure.size()) + ((fileStructure.size()-1)-quadrantZ);
-                index = (newX * this.filesOnXAxis) + ((fileStructure.size()-1)-quadrantZ);
-                System.out.println("INDEX_:"+index);
-                this.needToLoad[index] = true;
-            }
-            */
+
             System.out.println("NEW_X_: "+newX);
             if(newX >= 0){
                 loadedLeft = true;
@@ -325,24 +255,17 @@ public class FileLoader {
             //load top file
 
             newZ = quadrantZ + 1;
-            //index = (quadrantX * fileStructure.size()) + ((fileStructure.size()-1)-newZ);
             index = (quadrantX * this.filesOnXAxis) + ((fileStructure.size()-1)-newZ);
-            System.out.println("INDEX TO LOAD TOP FILE: "+index);
-            //this.needToLoad[index] = true;
+            //System.out.println("INDEX TO LOAD TOP FILE: "+index);
             this.needToLoad.set(index,Boolean.TRUE);
 
             if(loadedLeft || loadedRight){
-                //this.needToLoad[];
-                System.out.println("Load Top Corner File");
-                //index = (newX * fileStructure.size()) + ((fileStructure.size()-1)-newZ);
-                index = (newX * this.filesOnXAxis) + ((fileStructure.size()-1)-newZ);
-                System.out.println("INDEX_:"+index);
 
-                /*
-                if(index <= needToLoad.length-1){
-                    this.needToLoad[index] = true;
-                }
-                */
+                //System.out.println("Load Top Corner File");
+                index = (newX * this.filesOnXAxis) + ((fileStructure.size()-1)-newZ);
+                //System.out.println("INDEX_:"+index);
+
+
                 if(index <= needToLoad.size()-1){
                     this.needToLoad.set(index,Boolean.TRUE);
                 }
@@ -353,21 +276,18 @@ public class FileLoader {
 
         }else if(scaledZ < 20){
             // load bottom file
-            System.out.println("Load Bottom File");
+            //System.out.println("Load Bottom File");
 
             newZ = quadrantZ - 1;
-            loadZ = -1;
+
 
             if(newZ >=0){
-                //index = (quadrantX * fileStructure.size()) + ((fileStructure.size()-1)-newZ);
                 index = (quadrantX * this.filesOnXAxis) + ((fileStructure.size()-1)-newZ);
-                //this.needToLoad[index] = true;
                 this.needToLoad.set(index,Boolean.TRUE);
 
                 if(loadedLeft || loadedRight){
-                    System.out.println("Load Bottom Corner File");
-                    //this.needToLoad[];
-                    //index = (newX * fileStructure.size()) + ((fileStructure.size()-1)-newZ);
+                    //System.out.println("Load Bottom Corner File");
+
                     index = (newX * this.filesOnXAxis) + ((fileStructure.size()-1)-newZ);
                     //this.needToLoad[index] = true;
                     this.needToLoad.set(index,Boolean.TRUE);
@@ -382,43 +302,13 @@ public class FileLoader {
 
 
 
-        //boolean[] needToLoad =new boolean[fileStructure.size()];
-        //Arrays.fill(needToLoad,false);
-        /*
-        for(int i=0; i<this.needToLoad.length;i++){
-            System.out.print(this.needToLoad[i]);
-            System.out.print(this.isLoaded[i]);
-
-        }
-        */
+/*
         for(int i=0; i<this.needToLoad.size();i++){
             System.out.print(this.needToLoad.get(i));
             System.out.print(this.isLoaded.get(i));
 
         }
-
-        /*
-        for(int i=0; i<this.needToLoad.length;i++){
-            boolean actionNeeded = (this.needToLoad[i] ^ this.isLoaded[i]);
-            // & (!this.isLoaded[i])
-            String file_position;
-            if(actionNeeded){
-                file_position = savedMappings.get(String.valueOf(i));
-                if(this.isLoaded[i]){
-                    //unload the file
-                    loadedChunks.remove(file_position);
-
-                }else{
-                    //load the file
-                    String fileName = String.valueOf(fileStructure.get(file_position));
-                    //loadedChunks.put(file_position,)
-                    this.loadFile(fileName,file_position);
-                    this.isLoaded[i] = true;
-                }
-
-            }
-        }
-        */
+*/
 
         for(int i=0; i<this.needToLoad.size();i++){
             boolean actionNeeded = (this.needToLoad.get(i) ^ this.isLoaded.get(i));
@@ -452,64 +342,6 @@ public class FileLoader {
 
 
 
-        /*
-        if(this.chunksPerFile - scaledZ <20){
-            // load top file
-            loadedTop = true;
-            newZ = quadrantZ + 1;
-            loadZ = 1;
-
-
-            if(loadedRight || loadedLeft){
-
-                String fileStructKey = String.valueOf(newX)+"_"+String.valueOf(newZ);
-                String fileName = fileStructure.get(fileStructKey).getAsString();
-                this.loadFile(fileName,fileStructKey);
-            }
-            //may only need 1?
-            //if(loadedLeft){
-            //    String fileStructKey = String.valueOf(newX)+"_"+String.valueOf(newZ);
-            //    String fileName = fileStructure.get(fileStructKey).getAsString();
-            //    this.loadFile(fileName,fileStructKey);
-            //}
-        }
-
-        if(scaledZ < 20){
-            // load bottom file
-            loadedBottom = true;
-            newZ = quadrantZ - 1;
-            loadZ = -1;
-        }
-
-        if(loadX != 0 && loadZ  != 0){
-            //load a corner chunk
-            String fileName;
-            String corner_Key = String.valueOf(newX)+"_"+String.valueOf(newZ);
-            fileName = fileStructure.get(corner_Key).getAsString();
-            this.loadFile(fileName,corner_Key);
-
-
-
-            String north_south_Key = String.valueOf(chunkX)+"_"+String.valueOf(newZ);
-            fileName = fileStructure.get(north_south_Key).getAsString();
-            this.loadFile(fileName,north_south_Key);
-
-            String west_east_key = String.valueOf(newX)+"_"+String.valueOf(chunkZ);
-            fileName = fileStructure.get(west_east_key).getAsString();
-            this.loadFile(fileName,west_east_key);
-
-
-        }else if(loadX != 0 || loadZ !=0){
-            String cornerKey = String.valueOf(newX)+"_"+String.valueOf(newZ);
-            String fileName = fileStructure.get(cornerKey).getAsString();
-            this.loadFile(fileName,cornerKey);
-        }
-
-
-        String fileStructKey = String.valueOf(newX)+"_"+String.valueOf(newZ);
-        String fileName = fileStructure.get(fileStructKey).getAsString();
-        this.loadFile(fileName,fileStructKey);
-        */
 
     }
 
@@ -545,19 +377,12 @@ public class FileLoader {
         File file = new File(fname);
         try{
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
-            //JSONObject jsonObject = new JSONObject(content);
             JsonElement jsonElement = JsonParser.parseString(content);
 
             JsonArray currentLoad =  jsonElement.getAsJsonArray();
-            //String key = String.valueOf(quadrantX)+"_"+String.valueOf(quadrantZ);
 
-
-            //this.loadedChunks.put(fileCoordinateKey,currentLoad);
-            //int totalChunks = this.chunksPerFile * this.chunksPerFile;
-            //this.remainingChunks.put(fileCoordinateKey,totalChunks);
-            //return currentLoad;
             this.loadedMaterials.put(fileCoordinateKey,currentLoad);
-            //return currentLoad;
+
             return 1;
 
         } catch (IOException e) {
@@ -568,7 +393,7 @@ public class FileLoader {
     }
 
     public void unloadFile(String fileCoordinateKey){
-        System.out.println("CHUNK UNLOADED FOR: "+fileCoordinateKey);
+        //System.out.println("CHUNK UNLOADED FOR: "+fileCoordinateKey);
         if(this.loadedChunks.containsKey(fileCoordinateKey)){
             this.loadedChunks.remove(fileCoordinateKey);//this removes it in place, but it does return the removed value
 
@@ -580,11 +405,9 @@ public class FileLoader {
         int quadrantX = chunkX / this.chunksPerFile;
         int quadrantZ = chunkZ / this.chunksPerFile;
 
-        //needs to be tested
-        //int index = (quadrantX * fileStructure.size()) + ((fileStructure.size()-1)-quadrantZ);
 
-        int scaledX = chunkX - (this.chunksPerFile*quadrantX);
-        int scaledZ = chunkX - (this.chunksPerFile*quadrantZ);
+        //int scaledX = chunkX - (this.chunksPerFile*quadrantX);
+        //int scaledZ = chunkX - (this.chunksPerFile*quadrantZ);
 
         String key = quadrantX+"_"+quadrantZ;
         System.out.println(this.loadedChunks);
