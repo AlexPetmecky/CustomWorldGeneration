@@ -22,7 +22,7 @@ To use the plugin:
 
     NOTE: If you are using the pixel painter [https://alexanthology.com/CustomWorldGen/index.php] - only the FileStructure.json is relevant
     NOTE: The Elevation files and Material files need to have the same name
-    NOTE: This plugin does not currently access negative indecies, the bottom left is at 0,0
+    NOTE: This plugin does not currently access negative indices, the bottom left is at 0,0
 
     The FileStructure.json file should contain the following
     It should contain the number of chunks in a single direction contained in a file (it will be assumed to be a square) {FileChunkSize:X}
