@@ -1,5 +1,9 @@
 package alex_petmecky.customworldgeneration;
 
+//3js for obj loading
+
+//usd files
+
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,7 @@ import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import sun.tools.jconsole.JConsole;
 
 //import static alex_petmecky.customworldgen.StaticVariables.MULTI_FILE_PATH;
+import static alex_petmecky.customworldgeneration.StaticVariables.MATERIAL_FILES;
 import static alex_petmecky.customworldgeneration.StaticVariables.MULTI_FILE_PATH;
 
 
@@ -44,6 +49,10 @@ public class FileLoader {
     private HashMap<String,Integer> currNeeded = new HashMap<>();
 
     private HashMap<String,JsonArray> loadedChunks = new HashMap<>();
+    public HashMap<String,Integer> remainingChunks = new HashMap<>();
+
+    private HashMap<String,JsonArray> loadedMaterials = new HashMap<>();
+
     public FileLoader(CustomWorldGeneration plugin){
         //this.plugin = plugin;
 
@@ -84,6 +93,7 @@ public class FileLoader {
             this.fileStructure = jsonElement.getAsJsonObject().get("FileStructure").getAsJsonObject();
 
             this.filesOnXAxis = jsonElement.getAsJsonObject().get("files_on_x_axis").getAsInt();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
 
@@ -160,7 +170,14 @@ public class FileLoader {
         }else{
             String fileName = String.valueOf(fileStructure.get(file_index));
             JsonArray currentImg = this.loadFile(fileName,file_index);
-            this.isLoaded.set(index,true);
+
+            //to check for null
+            Integer material_load_status = this.loadMaterialFile(fileName,file_index);//loads the material file
+            if(material_load_status != null){
+                this.isLoaded.set(index,true);
+            }
+
+
             return currentImg;
         }
 
@@ -177,6 +194,18 @@ public class FileLoader {
                     this.loadFile(fileName,file_position);
         * */
 
+    }
+    /**
+     * THIS MUST BE CALLED AFTER LOADCHUNKS
+     * IT IS NOT SAFE AND ASSUMES THE MATERIAL FILES HAVE ALREADY BEEN LOADED
+     * @return the material image.
+     */
+    public JsonArray getMaterialImage(int chunkX, int chunkZ){
+        //
+        int quadrantX = chunkX / this.chunksPerFile;
+        int quadrantZ = chunkZ / this.chunksPerFile;
+        String file_index = quadrantX+"_"+quadrantZ;
+        return this.loadedMaterials.get(file_index);
     }
 
     public void LoadMultipleChunks(int chunkX, int chunkZ){
@@ -401,12 +430,18 @@ public class FileLoader {
                     //unload the file
                     loadedChunks.remove(file_position);
 
+                    loadedMaterials.remove(file_position);//may need to remove
+
                 }else{
                     //load the file
                     String fileName = String.valueOf(fileStructure.get(file_position));
                     //loadedChunks.put(file_position,)
                     this.loadFile(fileName,file_position);
+
+                    this.loadMaterialFile(fileName,file_position);//may need to remove
+
                     this.isLoaded.set(i,Boolean.TRUE);
+
                 }
 
             }
@@ -490,18 +525,54 @@ public class FileLoader {
             JsonArray currentLoad =  jsonElement.getAsJsonArray();
             //String key = String.valueOf(quadrantX)+"_"+String.valueOf(quadrantZ);
 
+
             this.loadedChunks.put(fileCoordinateKey,currentLoad);
+            int totalChunks = this.chunksPerFile * this.chunksPerFile;
+            this.remainingChunks.put(fileCoordinateKey,totalChunks);
             return currentLoad;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+            //return null;
 
         }
     }
 
-    private void unloadFile(String fileCoordinateKey){
+    //need this to be nullable
+    private Integer loadMaterialFile(String fileName,String fileCoordinateKey){
+        fileName = fileName.replace("\"","");
+        String fname = MATERIAL_FILES+fileName;
+        File file = new File(fname);
+        try{
+            String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+            //JSONObject jsonObject = new JSONObject(content);
+            JsonElement jsonElement = JsonParser.parseString(content);
+
+            JsonArray currentLoad =  jsonElement.getAsJsonArray();
+            //String key = String.valueOf(quadrantX)+"_"+String.valueOf(quadrantZ);
+
+
+            //this.loadedChunks.put(fileCoordinateKey,currentLoad);
+            //int totalChunks = this.chunksPerFile * this.chunksPerFile;
+            //this.remainingChunks.put(fileCoordinateKey,totalChunks);
+            //return currentLoad;
+            this.loadedMaterials.put(fileCoordinateKey,currentLoad);
+            //return currentLoad;
+            return 1;
+
+        } catch (IOException e) {
+            return null;
+            //throw new RuntimeException(e);
+
+        }
+    }
+
+    public void unloadFile(String fileCoordinateKey){
+        System.out.println("CHUNK UNLOADED FOR: "+fileCoordinateKey);
         if(this.loadedChunks.containsKey(fileCoordinateKey)){
             this.loadedChunks.remove(fileCoordinateKey);//this removes it in place, but it does return the removed value
+
+            this.loadedMaterials.remove(fileCoordinateKey);//may need to be removed
         }
     }
 

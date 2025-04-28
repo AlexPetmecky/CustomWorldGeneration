@@ -1,11 +1,15 @@
 package alex_petmecky.customworldgeneration;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
 
 import java.io.Console;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.logging.Level;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -47,10 +51,17 @@ public class CustomChunkGenerator extends ChunkGenerator {
         //JsonArray image = fileLoader.getImg(chunkX,chunkZ);
         JsonArray image = fileLoader.loadChunks(chunkX,chunkZ);
 
+        JsonArray materialData = fileLoader.getMaterialImage(chunkX,chunkZ);
+        if (materialData == null){
+
+        }
         if(image == null){
             System.out.println("NULL Chunk Exited For X: "+chunkX+" Z: "+chunkZ);
             return;
         }
+
+        //load the whole image
+
 
 
 
@@ -86,18 +97,106 @@ public class CustomChunkGenerator extends ChunkGenerator {
             scaledX = chunkX - this.cpf * (chunkX / this.cpf);
         }
 
+        int max_chunk_Z = this.cpf * (scaledZ + 1);
+        int max_chunk_X = this.cpf * (scaledX + 1);
+
+
+/*
+        World world = Bukkit.getWorld(worldInfo.getUID());
+
+
+        for (int i=0;i<image.size();i++) {
+            for(int j=0;j<image.size();j++){
+
+
+                //JsonArray currChunkZ  = image.get(i).getAsJsonArray();
+                //JsonArray currChunkZ = (JsonArray) image.get(image.size() - (1+i));
+                JsonArray currChunkZ = (JsonArray) image.get(i);
+                JsonArray chunk_final = (JsonArray) currChunkZ.get(j).getAsJsonArray();
+
+                Chunk chunkToFill = world.getChunkAt( j * scaledX ,image.size() - (1+i) * scaledZ );
+                chunkToFill.setForceLoaded(true);
+
+                JsonArray chunk_final = image.get(i).getAsJsonArray();
+
+                for (int z = 15; z >= 0; z--){
+                    for (int x = 0; x < 16; x++){
+
+                        int max_height = (int) chunk_final.get((15-z)).getAsJsonArray().get(x).getAsInt();
+
+                        boolean flag = false;
+                        if (max_height == -32768){
+                            max_height = 0;
+                            flag = true;
+                            //Material setblock = Material.WATER;
+                        }
+                        for (int y = chunkData.getMinHeight(); y <= max_height; y++){
+                            if(y == chunkData.getMinHeight()){
+                                chunkData.setBlock(x, y, z,Material.BEDROCK);
+                            }else{
+                                if(flag){
+                                    chunkData.setBlock(x, y, z, Material.WATER);
+                                }else if (max_height < -30) {
+                                    chunkData.setBlock(x,y,z,Material.DIRT);
+                                }else {
+                                    chunkData.setBlock(x, y, z, Material.STONE);
+                                }
+
+                            }
+
+
+
+                        }//close y for loop
+
+                        ///
+                    }
+                }
+
+
+
+
+
+
+
+
+            }
+
+
+
+
+
+
+
+
+        }*/
+
+
+
         if(image.size() -(1+scaledZ) < 0){
             //make sure we are not entering negative indecies
             System.out.println("Chunk? Exited For X: "+chunkX+" Z: "+scaledZ);
             return;
         }
         JsonArray z_chunk_data = (JsonArray) image.get(image.size() - (1+scaledZ));
+        JsonArray z_material_chunk = null;
+        if(materialData != null){
+            z_material_chunk = (JsonArray) materialData.get(image.size() - (1+scaledZ));
+
+        }
+
 
         if(scaledX > z_chunk_data.size()-1){
             System.out.println("Chunk@ Exited For X: "+chunkX+" Z: "+chunkZ);
             return;
         }
         JsonArray final_chunk_data = (JsonArray) z_chunk_data.get(scaledX);
+        JsonArray final_material_data = null;
+        if(materialData !=null){
+            final_material_data = (JsonArray) z_material_chunk.get(scaledX);
+        }
+
+
+
         System.out.println("FINAL CHUNK DATA FOR: "+"X: "+chunkX+" Z: "+chunkZ);
         //System.out.println(final_chunk_data);
 
@@ -131,6 +230,12 @@ public class CustomChunkGenerator extends ChunkGenerator {
                 //int max_height = row.getAsInt()
 
                 int max_height = (int) final_chunk_data.get((15-z)).getAsJsonArray().get(x).getAsInt();
+                String final_material = null;
+
+                if(materialData != null){
+                    final_material = (String) final_material_data.get((15-z)).getAsJsonArray().get(x).getAsString();
+
+                }
 
                 boolean flag = false;
                 if (max_height == -32768){
@@ -138,16 +243,27 @@ public class CustomChunkGenerator extends ChunkGenerator {
                     flag = true;
                     //Material setblock = Material.WATER;
                 }
+
+                Material f_mat=null;
+                if (materialData !=null){
+                    f_mat = Material.getMaterial(final_material);
+                }
+
+                //switch ()
+                if (f_mat == null){
+                    f_mat = Material.WHITE_WOOL;
+                }
+
                 for (int y = chunkData.getMinHeight(); y <= max_height; y++){
                     if(y == chunkData.getMinHeight()){
                         chunkData.setBlock(x, y, z,Material.BEDROCK);
                     }else{
                         if(flag){
-                            chunkData.setBlock(x, y, z, Material.WATER);
+                            chunkData.setBlock(x, y, z, f_mat);
                         }else if (max_height < -30) {
-                            chunkData.setBlock(x,y,z,Material.DIRT);
+                            chunkData.setBlock(x,y,z,f_mat);
                         }else {
-                            chunkData.setBlock(x, y, z, Material.STONE);
+                            chunkData.setBlock(x, y, z, f_mat);
                         }
                         /*
                         if (max_height <= 0 && max_height >= -30){
@@ -166,6 +282,15 @@ public class CustomChunkGenerator extends ChunkGenerator {
             }
         }
         System.out.println("Chunk Loaded For X: "+chunkX+" Z: "+chunkZ);
+
+        String key = scaledX+"_"+scaledZ;
+        if(fileLoader.remainingChunks.containsKey(key)){
+            int remaining = (fileLoader.remainingChunks.get(key)) - 1;
+            if (remaining <= 0){
+                fileLoader.unloadFile(key);
+            }
+        }
+
 
 /*
         for (int z = (chunkZ+1)*16; z >= chunkZ * 16; z--){
