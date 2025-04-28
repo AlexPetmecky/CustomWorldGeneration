@@ -1,6 +1,6 @@
 How to use this plugin
 
-Each File should be a 4D list of points, the first 2 dimensions are the rows and columns of the image, the 2nd 2 dimensions are each of images as a chunk (16x16)
+Each file containing terrain/material data should be a 4D list of points, the first 2 dimensions are the rows and columns of the image, the 2nd 2 dimensions are each of images as a chunk (16x16)
 
 To use the plugin:
     In the server folder --> put the plugin in the plugins folder
@@ -20,7 +20,7 @@ To use the plugin:
 
     The files of structure of the folder
 
-    NOTE: If you are using the pixel painter - only the FileStructure.json is relevant
+    NOTE: If you are using the pixel painter [https://alexanthology.com/CustomWorldGen/index.php] - only the FileStructure.json is relevant
     NOTE: The Elevation files and Material files need to have the same name
 
     The FileStructure.json file should contain the following
