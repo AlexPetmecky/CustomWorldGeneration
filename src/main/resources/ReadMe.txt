@@ -1,3 +1,4 @@
+The compiled plugin can be found at https://www.spigotmc.org/resources/customworldgeneration.124556/
 How to use this plugin
 
 Each file containing terrain/material data should be a 4D list of points, the first 2 dimensions are the rows and columns of the image, the 2nd 2 dimensions are each of images as a chunk (16x16)
